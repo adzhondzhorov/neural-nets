@@ -1,3 +1,5 @@
+from numbers import Number
+
 from lib.value import Value
 
 
@@ -51,8 +53,6 @@ class Vector:
 
     def all_values(self):
         return self.values
-
-from numbers import Number
 
 
 class Matrix:

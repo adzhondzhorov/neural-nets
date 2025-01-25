@@ -7,6 +7,9 @@ class Layer:
     def __call__(self, X):
         return self.forward(X)
 
+    def params(self):
+        return []
+
 
 class Linear(Layer):
     def __init__(self, fan_in, fan_out):
@@ -25,16 +28,10 @@ class ReLU(Layer):
     def forward(self, X):
         return Matrix.max(X, 0)
 
-    def params(self):
-        return []
-
 
 class Sigmoid(Layer):
     def forward(self, X):
-        return 1 / (1 + np.exp(-X))
-
-    def params(self):
-        return []
+        return 1 / (1 + (-X).exp())
 
 
 class NN:
