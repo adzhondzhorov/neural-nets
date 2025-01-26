@@ -2,6 +2,23 @@ from lib.value import Value
 from lib.linear_algebra import Matrix
 
 
+class OneHotEncoder:
+    def __init__(self):
+        self.categories = []
+
+    def fit(self, vector):
+        for v in vector:
+            if v not in self.categories:
+                self.categories.append(v)
+
+    def transform(self, vector):
+        result = []
+        for v in vector:
+            result.append([int(v == c) for c in self.categories])
+
+        return Matrix(result)
+
+
 class ColumnNormalizer:
     def __init__(self):
         self.means = []

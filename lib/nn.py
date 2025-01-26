@@ -2,6 +2,7 @@ import numpy as np
 
 from lib.linear_algebra import Vector, Matrix
 
+EPSILON = 1e-5
 
 class Layer:
     def __call__(self, X):
@@ -32,6 +33,12 @@ class ReLU(Layer):
 class Sigmoid(Layer):
     def forward(self, X):
         return 1 / (1 + (-X).exp())
+
+
+class Softmax(Layer):
+    def forward(self, X):
+        exp_X = X.exp()
+        return exp_X / (exp_X.row_sum().broadcast(X.dims()[1]) + EPSILON)
 
 
 class NN:
