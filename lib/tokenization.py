@@ -17,7 +17,7 @@ class BPETokenizer:
     def fit(self, docs):        
         text = f" {self.SEPARATOR_TOKEN} ".join([d for d in docs])
         self.vocab = [self.SEPARATOR_TOKEN] + list(sorted(set(text)))
-        tokenized_text = [(self.vocab.index(c), ) for c in text]
+        tokenized_text = [(t, ) for t in self.encode(text)]
         
         i = 0
         time_point = time.time()
@@ -60,17 +60,14 @@ class BPETokenizer:
             indexed_tokens.append((idx, token))
 
         for idx, token in indexed_tokens:
-            text_idx = 0
-            new_tokenized_text = []
-            while text_idx < len(tokenized_text):
-                candidate = tokenized_text[text_idx:text_idx + len(token)]
-                if all(isinstance(tt, str) for tt in candidate) and \
-                   ("".join(candidate) == token):
-                    new_tokenized_text.append(idx)
-                    text_idx += len(token)
-                else:
-                    new_tokenized_text.append(tokenized_text[text_idx])
-                    text_idx += 1
-            tokenized_text = new_tokenized_text
-        return tokenized_text
-        
+            start_idx = 0
+            while True:
+                start_idx = text.find(token, start_idx)
+                if start_idx == -1:
+                    break
+                end_idx = start_idx + len(token)
+                if all(isinstance(tt, str) for tt in tokenized_text[start_idx:end_idx]):
+                    tokenized_text[start_idx] = idx
+                    tokenized_text[start_idx+1:end_idx] = [-1] * (end_idx - start_idx - 1)
+                start_idx = end_idx
+        return [t for t in tokenized_text if t != -1]
