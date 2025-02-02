@@ -7,12 +7,20 @@ from lib.calculus import Derivative, Op
 
 
 class Value:
+    __slots__ = ("data", "grad", "children", "_backward", "_id")
+
     def __init__(self, data):
         self.data = data
-        self.grad = 0
-        self.children = set()
-        self._backward = lambda: 0
         self._id = uuid4()
+
+    def __getattr__(self, name):
+        lazy_loads = {
+            "grad": 0,
+            "children": set(),
+            "_backward": lambda: 0,
+        }
+        setattr(self, name, lazy_loads[name])
+        return lazy_loads[name]
 
     def __str__(self):
         return str(f"{{{str(self._id)[:8]}, {round(self.data, 2)}, {round(self.grad, 2)}}}")
@@ -81,6 +89,13 @@ class Value:
             out._backward = Value._get_backward_func(Op.MAX, [self, num], out)
         return out
     
+    def min(self, num):
+        if isinstance(num, Number):
+            out = Value(self.data if self.data <= num else num)
+            out.children.update([self])
+            out._backward = Value._get_backward_func(Op.MIN, [self, num], out)
+        return out
+
     def __lt__(self, num):
         if isinstance(num, Number):
             return self.data < num
@@ -107,7 +122,38 @@ class Value:
                     in_var.grad += derivative(in_var)
         return _backward
 
-    def backward(self):
-        self._backward()
+    @staticmethod
+    def _order_topologically(items):
+        descendants_map = {}
+        for item in items:
+            item_descendats = set()
+            item._get_all_descendats(item_descendats)
+            item_descendats.remove(item)
+            descendants_map[item] = item_descendats
+        reverse_order = []
+        while items:
+            new_to_order = set()
+            for item in items:
+                if not descendants_map[item]:
+                    new_to_order.add(item)
+            items = [i for i in items if i not in new_to_order]
+            for item in descendants_map:
+                descendants_map[item] -= new_to_order
+            reverse_order.extend(new_to_order)
+        
+        return reversed(reverse_order)
+    
+    def _get_all_descendats(self, all_descendats):
+        all_descendats.add(self) 
         for child in self.children:
-            child.backward()
+            child._get_all_descendats(all_descendats)
+
+    def _get_topologically_ordered_all_descendats(self):
+        all_decsendants = set()
+        self._get_all_descendats(all_decsendants)
+        return self._order_topologically(list(all_decsendants))
+       
+    def backward(self):
+        all_decsendants = self._get_topologically_ordered_all_descendats()
+        for decsendant in all_decsendants:
+            decsendant._backward()
