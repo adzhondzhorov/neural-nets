@@ -122,38 +122,22 @@ class Value:
                     in_var.grad += derivative(in_var)
         return _backward
 
-    @staticmethod
-    def _order_topologically(items):
-        descendants_map = {}
-        for item in items:
-            item_descendats = set()
-            item._get_all_descendats(item_descendats)
-            item_descendats.remove(item)
-            descendants_map[item] = item_descendats
-        reverse_order = []
-        while items:
-            new_to_order = set()
-            for item in items:
-                if not descendants_map[item]:
-                    new_to_order.add(item)
-            items = [i for i in items if i not in new_to_order]
-            for item in descendants_map:
-                descendants_map[item] -= new_to_order
-            reverse_order.extend(new_to_order)
-        
-        return reversed(reverse_order)
-    
-    def _get_all_descendats(self, all_descendats):
-        all_descendats.add(self) 
-        for child in self.children:
-            child._get_all_descendats(all_descendats)
+    def _get_reverse_topologically_ordered_all_descendats(self):
+        ordered, visited = [], set()
+        stack = [(self, False)]
+        while stack:
+            value, visited_children = stack.pop()
+            if visited_children:
+                ordered.append(value)
+            else:
+                if value not in visited:
+                    visited.add(value)
+                    stack.append((value, True))
+                    for child in value.children:
+                        stack.append((child, False))
+        return reversed(ordered)
 
-    def _get_topologically_ordered_all_descendats(self):
-        all_decsendants = set()
-        self._get_all_descendats(all_decsendants)
-        return self._order_topologically(list(all_decsendants))
-       
     def backward(self):
-        all_decsendants = self._get_topologically_ordered_all_descendats()
-        for decsendant in all_decsendants:
-            decsendant._backward()
+        ordered_descendants = self._get_reverse_topologically_ordered_all_descendats()
+        for descendant in ordered_descendants:
+            descendant._backward()
