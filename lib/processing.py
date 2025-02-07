@@ -1,5 +1,5 @@
 from lib.value import Value
-from lib.linear_algebra import Matrix
+from lib.linear_algebra import Matrix, Vector
 
 
 class OneHotEncoder:
@@ -37,3 +37,16 @@ class ColumnNormalizer:
                     result.append([])
                 result[idx].append(Value((v.data - self.means[col].data) / self.stds[col].data))
         return Matrix(result)
+
+
+class LabelEncoder:
+    def __init__(self):
+        self.categories = []
+
+    def fit(self, vector):
+        for v in vector:
+            if v not in self.categories:
+                self.categories.append(v)
+
+    def transform(self, vector):
+        return Vector([self.categories.index(v) for v in vector])

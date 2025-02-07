@@ -8,7 +8,8 @@ class Op:
     POW = "power"
     EXP = "exponent"
     LN = "natural_logarithm"
-    MAX = "maxium"
+    MAX = "maximum"
+    MIN = "minimum"
 
 
 class Derivative:
@@ -42,6 +43,9 @@ class Derivative:
             case Op.MAX:
                 compare_num = self._other_var(wrt_var)
                 part_deriv = 1 if wrt_var.data >= compare_num else 0
+            case Op.MIN:
+                compare_num = self._other_var(wrt_var)
+                part_deriv = 1 if wrt_var.data <= compare_num else 0
     
         return self.out_var.grad * part_deriv
        

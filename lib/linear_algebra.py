@@ -5,7 +5,11 @@ from lib.value import Value
 
 class Vector:
     def __init__(self, values):
-        self.values = [v if isinstance(v, Value) else Value(v) for v in values]
+        are_value_types = isinstance(values[0], Value)
+        if are_value_types:
+            self.values = values.copy()
+        else:
+            self.values = [Value(v) for v in values]
 
     def __str__(self):
         return f"Vector({self.values})"
@@ -57,10 +61,15 @@ class Vector:
 
 class Matrix:
     def __init__(self, values):
-        result = []
-        for vr in values:
-            result.append([v if isinstance(v, Value) else Value(v) for v in vr])
-        self.values = result
+        are_value_types = isinstance(values[0][0], Value)
+        size = len(values) * len(values[0])
+        if are_value_types:
+            self.values = values.copy()
+        else:
+            result = []
+            for row in values:
+                result.append([Value(v) for v in row])
+            self.values = result
 
     def __str__(self):
         values_str = ",".join(["\n" + str(r) for r in self.values])
@@ -105,7 +114,12 @@ class Matrix:
 
     def __sub__(self, other):
         return self.__add__(-other)
-          
+
+    def __rsub__(self, other):
+        if isinstance(other, Number):
+            d1, d2 = self.dims()
+            return Matrix([[other] * d2] * d1).__add__(-self)
+
     def __neg__(self):
         result = [] 
         for row in self.values:
@@ -135,6 +149,12 @@ class Matrix:
         for row in self.values:
             for i in range(len(row)):
                 row[i] = Value.max(row[i], num)
+        return self
+
+    def min(self, num):
+        for row in self.values:
+            for i in range(len(row)):
+                row[i] = Value.min(row[i], num)
         return self
 
     def exp(self):
@@ -168,7 +188,10 @@ class Matrix:
         return all_values
     
     def row(self, key):
-        return Vector(self.values[key])
+        return Vector(self.values[key.data if isinstance(key, Value) else key])
+
+    def rows(self, keys):
+        return Matrix([self.values[key.data if isinstance(key, Value) else key] for key in keys])
         
     def col(self, key):
         col = []
@@ -196,7 +219,7 @@ class Matrix:
         return Matrix(result)
     
     def matmul(self, other):
-        assert self.dims()[1] == other.dims()[0]
+        assert self.dims()[1] == other.dims()[0], f"Trying to multiply matrices of dims {self.dims()} and {other.dims()}"
         result = []
         for sri in range(len(self.values)):
             row = []
@@ -212,4 +235,19 @@ class Matrix:
             for v in row:
                 v.backward()
 
-    
+
+class Tensor3D:
+    def __init__(self, matrices):
+        self.matrices = matrices
+
+    def __str__(self):
+        return f"Tensor([{[str(m) for m in self.matrices]}])"
+
+    def __repr__(self):
+        return str(self)
+
+    def dims(self):
+        return tuple([len(self.matrices), *self.matrices[0].dims()])
+
+    def matrix(idx):
+        return self.matrices(index)
