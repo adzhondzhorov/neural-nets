@@ -250,4 +250,4 @@ class Tensor3D:
         return tuple([len(self.matrices), *self.matrices[0].dims()])
 
     def matrix(idx):
-        return self.matrices(index)
+        return self.matrices(idx)
