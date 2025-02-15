@@ -50,10 +50,6 @@ class Vector:
         
     def dotprod(self, other):
         return sum(self * other)
-        
-    def zero_grad(self):
-        for i in range(len(self.values)):
-            self.values[i].zero_grad()
 
     def all_values(self):
         return self.values
@@ -175,11 +171,6 @@ class Matrix:
             result.append(result_row)
         return Matrix(result)
     
-    def zero_grad(self):
-        for row in self.values:
-            for i in range(len(row)):
-                row[i].zero_grad()
-
     def all_values(self):
         all_values = []
         for row in self.values:

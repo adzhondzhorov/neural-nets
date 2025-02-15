@@ -9,7 +9,7 @@ Using only numpy for randomization of lists and nothing else outside of standard
 6. Basic tokenization - BPE algorithm
 7. Text classification example - IMDB dataset for tokenizer training, Flipkart reviews for sentiment analysis, Embedding, Flatten layers
    
-8*. Hitting an issue with speed in several ares:
+8*. Hitting an issue with speed in several areas:
    - Value class creation
    - Matrix multiplication
    - backpropagation
