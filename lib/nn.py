@@ -46,7 +46,7 @@ class Sigmoid(Layer):
 class Softmax(Layer):
     def forward(self, X):
         exp_X = X.exp()
-        return exp_X / (exp_X.row_sum().broadcast(X.dims()[1]) + EPSILON)
+        return exp_X / (Matrix.broadcast(exp_X.row_sum(), X.dims()[1]) + EPSILON)
 
 
 class Embedding(Layer):

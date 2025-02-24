@@ -35,6 +35,9 @@ class Vector:
     def dim(self):
         return len(self.values)
 
+    def sum(self):
+        return sum(self.values)
+
     def mean(self):
         return (sum(self.values)/self.dim())
 
@@ -58,7 +61,6 @@ class Vector:
 class Matrix:
     def __init__(self, values):
         are_value_types = isinstance(values[0][0], Value)
-        size = len(values) * len(values[0])
         if are_value_types:
             self.values = values.copy()
         else:
@@ -179,10 +181,10 @@ class Matrix:
         return all_values
     
     def row(self, key):
-        return Vector(self.values[key.data if isinstance(key, Value) else key])
+        return Vector(self.values[int(key.data) if isinstance(key, Value) else key])
 
     def rows(self, keys):
-        return Matrix([self.values[key.data if isinstance(key, Value) else key] for key in keys])
+        return Matrix([self.values[int(key.data) if isinstance(key, Value) else key] for key in keys])
         
     def col(self, key):
         col = []
@@ -193,8 +195,8 @@ class Matrix:
     def row_sum(self):
         row_sum = []
         for row in self.values:
-            row_sum.append([sum(row)])
-        return Matrix(row_sum)
+            row_sum.append(sum(row))
+        return Vector(row_sum)
      
     def col_sum(self):
         col_sum = [0] * self.dims()[1]
@@ -203,10 +205,11 @@ class Matrix:
                 col_sum[i]+=row[i]
         return Vector(col_sum)
 
-    def broadcast(self, n):
+    @staticmethod
+    def broadcast(vector, n):
         result = []
-        for row in self.values:
-            result.append(row*n)
+        for v in vector:
+            result.append([v]*n)
         return Matrix(result)
     
     def matmul(self, other):
@@ -221,11 +224,6 @@ class Matrix:
             result.append(row)
         return Matrix(result)
 
-    def backward(self):
-        for row in self.values:
-            for v in row:
-                v.backward()
-
 
 class Tensor3D:
     def __init__(self, matrices):
@@ -239,6 +237,3 @@ class Tensor3D:
 
     def dims(self):
         return tuple([len(self.matrices), *self.matrices[0].dims()])
-
-    def matrix(idx):
-        return self.matrices(idx)
