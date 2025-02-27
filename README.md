@@ -17,3 +17,6 @@ Might need to reconsider not using external libraries and algorithms.
 
 9. Losses and metrics in separate module - MSE, NLL, BCE, accuracy
 
+10. Different Gradient Descent data loaders - Batch, SGD and Mini-batch
+
+11. Optimizers - SGD, SGD with momentum, AdaGrad, RMSProp, Adam
