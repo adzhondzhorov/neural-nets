@@ -6,19 +6,14 @@ from lib.calculus import Derivative, Op
 
 
 class Value:
-    __slots__ = ("data", "grad", "children", "_backward")
+    __slots__ = ("data", "grad", "children", "_backward", "_backprop_order_cache")
 
     def __init__(self, data):
         self.data = float(data)
-
-    def __getattr__(self, name):
-        lazy_loads = {
-            "grad": 0,
-            "children": set(),
-            "_backward": lambda: 0,
-        }
-        setattr(self, name, lazy_loads[name])
-        return lazy_loads[name]
+        self.grad = 0
+        self.children = set()
+        self._backward = lambda: 0
+        self._backprop_order_cache = None
 
     def __str__(self):
         return str(f"{{{round(self.data, 2)}, {round(self.grad, 2)}}}")
@@ -169,6 +164,7 @@ class Value:
         return reversed(ordered)
 
     def backward(self):
-        ordered_descendants = self._get_reverse_topologically_ordered_all_descendats()
-        for descendant in ordered_descendants:
+        if self._backprop_order_cache is None:
+            self._backprop_order_cache = self._get_reverse_topologically_ordered_all_descendats()
+        for descendant in self._backprop_order_cache:
             descendant._backward()

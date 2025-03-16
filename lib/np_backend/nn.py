@@ -1,6 +1,6 @@
 import numpy as np
 
-from lib.fast.linear_algebra import Vector, Matrix, Tensor3D
+from lib.np_backend.linear_algebra import Vector, Matrix, Tensor3D
 
 EPSILON = 1e-5
 

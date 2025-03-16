@@ -1,5 +1,5 @@
-from lib.fast.value import Value
-from lib.fast.linear_algebra import Matrix, Vector
+from lib.np_backend.value import Value
+from lib.np_backend.linear_algebra import Matrix, Vector
 
 
 class OneHotEncoder:

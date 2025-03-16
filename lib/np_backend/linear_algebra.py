@@ -1,5 +1,5 @@
 import numpy as np
-from lib.fast.value import Value
+from lib.np_backend.value import Value
 
 
 class Vector(np.ndarray):
