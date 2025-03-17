@@ -1,4 +1,4 @@
-from lib.pt_backend.linear_algebra import Matrix, Vector
+from lib.pt_backend.linear_algebra import Matrix
 
 
 class OneHotEncoder:
@@ -42,4 +42,4 @@ class LabelEncoder:
                 self.categories.append(v)
 
     def transform(self, vector):
-        return Vector([self.categories.index(v) for v in vector])
+        return Matrix([self.categories.index(v) for v in vector])
