@@ -20,3 +20,5 @@ Might need to reconsider not using external libraries and algorithms.
 10. Different Gradient Descent data loaders - Batch, SGD and Mini-batch
 
 11. Optimizers - SGD, SGD with momentum, AdaGrad, RMSProp, Adam
+
+12. Diffrenet backends exposing same interface - original with code from scratch, numpy based and pytorch based ones
