@@ -27,10 +27,22 @@ class Vector:
         return self.values.__next__()
 
     def __add__(self, other):
-        return Vector([sv + ov for sv, ov in zip(self.values, other.values)])
+        if isinstance(other, Vector):
+            return Vector([sv + ov for sv, ov in zip(self.values, other.values)])
+        elif isinstance(other, Value):
+            return Vector([sv + other for sv in self.values])
+
+    def __sub__(self, other):
+        return self.__add__(-other)
 
     def __mul__(self, other):
-        return Vector([sv * ov for sv, ov in zip(self.values, other.values)])
+        if isinstance(other, Vector):
+            return Vector([sv * ov for sv, ov in zip(self.values, other.values)])
+        elif isinstance(other, Value):
+            return Vector([sv * other for sv in self.values])
+
+    def __truediv__(self, other):
+        return self.__mul__(other**(-1))
 
     def dim(self):
         return len(self.values)
@@ -206,12 +218,15 @@ class Matrix:
         return Vector(col_sum)
 
     @staticmethod
-    def broadcast(vector, n):
+    def broadcast(vector, n, axis=0):
         result = []
-        for v in vector:
-            result.append([v]*n)
+        if axis == 0:
+            for v in vector:
+                result.append([v] * n)
+        elif axis == 1:
+            result = [vector.values] * n
         return Matrix(result)
-    
+
     def matmul(self, other):
         assert self.dims()[1] == other.dims()[0], f"Trying to multiply matrices of dims {self.dims()} and {other.dims()}"
         result = []

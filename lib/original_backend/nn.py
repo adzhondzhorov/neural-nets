@@ -57,6 +57,9 @@ class Embedding(Layer):
         out = Tensor3D([self.embedding.rows(seq) for seq in X])
         return out
 
+    def params(self):
+        return [self.embedding]
+
 
 class Flatten(Layer):
     def forward(self, X):
@@ -82,6 +85,25 @@ class MaxPooling(Layer):
     def forward(self, X):
         out = Tensor3D([[self._maxpool(channels) for channels in sequence] for sequence in X.matrices])
         return out
+
+
+class LayerNorm(Layer):
+    def __init__(self, fan_in):
+        self.scale = Vector([1 for _ in range(fan_in)])
+        self.bias = Vector([0 for _ in range(fan_in)])
+
+    def forward(self, X):
+        norm_rows = []
+        for r in range(X.dims()[0]):
+            row = X.row(r)
+            norm_row = ((row - row.mean()) / row.std()).values
+            norm_rows.append(norm_row)
+        norm_X = Matrix(norm_rows)
+        out = norm_X * Matrix.broadcast(self.scale, norm_X.dims()[0], axis=1) + Matrix.broadcast(self.bias, norm_X.dims()[0],  axis=1)
+        return out
+
+    def params(self):
+        return [self.scale, self.bias]
 
 
 class NN:
