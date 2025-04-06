@@ -84,8 +84,11 @@ class Matrix(np.ndarray):
         return Matrix(self @ other)
 
     @staticmethod
-    def broadcast(vector, n):
-        return Matrix(np.tile(vector, (n, 1)).T)
+    def broadcast(vector, n, axis=0):
+        if axis == 0:
+            return Matrix(np.tile(vector, (n, 1)).T)
+        elif axis == 1:
+            return Matrix(np.tile(vector, (n, 1)))
 
 
 class Tensor3D:
