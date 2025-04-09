@@ -62,6 +62,15 @@ class MaxPooling(nn.Module):
         return self.pool(X)
 
 
+class LayerNorm(nn.Module):
+    def __init__(self, fan_in):
+        super().__init__()
+        self.layer_norm = nn.LayerNorm([fan_in,])
+
+    def forward(self, X):
+        return self.layer_norm(X)
+
+
 class NN(nn.Module):
     def __init__(self, layers):
         super().__init__()
